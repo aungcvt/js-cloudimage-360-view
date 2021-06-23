@@ -325,6 +325,10 @@ class CI360Viewer {
       this.speedFactor = Math.floor(this.dragSpeed / 150 * 36 / this.amount * 25 * imageOffsetWidth / 1500) || 1;
     }
 
+    if (this.imageOffset) {
+      this.activeImage = this.imageOffset;
+    }
+
     if (this.autoplay) {
       this.play();
     }
@@ -362,7 +366,15 @@ class CI360Viewer {
 
       const ctx = this.canvas.getContext("2d");
 
-      ctx.drawImage(event.target, 0, 0, this.canvas.width, this.canvas.height);
+      let imagePreview = event.target;
+
+      if (this.imageOffset) {
+        imagePreview = this.images[this.imageOffset - 1];
+      }
+
+      setTimeout(() => {
+        ctx.drawImage(imagePreview, 0, 0, this.canvas.width, this.canvas.height);
+      }, 400);
     }
 
     if (this.lazyload && !this.fullScreenView) {
@@ -777,7 +789,7 @@ class CI360Viewer {
   init(container) {
     let {
       folder, filename, imageList, indexZeroBase, amount, draggable = true, swipeable = true, keys, bottomCircle, bottomCircleOffset, boxShadow,
-      autoplay, speed, autoplayReverse, fullScreen, magnifier, ratio, responsive, ciToken, ciSize, ciOperation,
+      autoplay, speed, autoplayReverse, imageOffset, fullScreen, magnifier, ratio, responsive, ciToken, ciSize, ciOperation,
       ciFilters, lazyload, lazySelector, spinReverse, dragSpeed, stopAtEdges, controlReverse, hide360Logo, logoSrc
     } = get360ViewProps(container);
     const ciParams = { ciSize, ciToken, ciOperation, ciFilters };
@@ -796,6 +808,7 @@ class CI360Viewer {
     this.autoplay = autoplay && !this.isMobile;
     this.speed = speed;
     this.reversed = autoplayReverse;
+    this.imageOffset = imageOffset;
     this.fullScreen = fullScreen;
     this.magnifier = !this.isMobile && magnifier ? magnifier : false;
     this.lazyload = lazyload;
